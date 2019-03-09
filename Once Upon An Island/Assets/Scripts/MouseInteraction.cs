@@ -39,7 +39,7 @@ public class MouseInteraction : MonoBehaviour
 
     private void SetInteractible(InteractibleMouse newInteractible)
     {
-        _desiredObject = newInteractible;
+            _desiredObject = newInteractible;
     }
 
     private void UpdateInteractibleMoviment()

@@ -37,7 +37,6 @@ public class InteractibleMouse : MonoBehaviour
         if(_objectMoviment.x <= _objectMoviment.x + max_x)
         {
             _objectMoviment.x = Input.GetAxis("Mouse X") * _movimentMultiplier;
-            Debug.Log(_objectMoviment.x);
         }
         else if(_objectMoviment.x > _objectMoviment.x + max_x)
         {

@@ -22,14 +22,7 @@ public class PlayerMoviment : MonoBehaviour
     private Vector3                 _guideVector;
     private Vector3                 _movimentVector;
     //test
-    private Vector3                 _jumpVelocity;
-
-        /*FROM PLAY STARTING POSITION
-        1 = FRONT
-        2 = RIGHT
-        3 = BACK
-        4 = LEFT
-        */
+    private Vector3 _jumpVelocity;
 
     void Start()
     {
@@ -42,22 +35,22 @@ public class PlayerMoviment : MonoBehaviour
 
     void Update()
     {
-        UpdateMovimentVector();
+        UpdateMoviment();
         UpdatePlayerMovimentItself();
     }
 
-    private void UpdateMovimentVector()
+    private void UpdateMoviment()
     {
 
-        if (cameraInstance.cameraRotation < 0 && _cameraReference != cameraInstance.cameraPosition)
+        if (cameraInstance.turnSideGetter < 0)
         {
             _player.transform.Rotate(0, -90, 0);
-            _cameraReference = cameraInstance.cameraPosition;
+            cameraInstance.turnSideGetter = 0;
         }
-        else if (cameraInstance.cameraRotation > 0 && _cameraReference != cameraInstance.cameraPosition)
+        else if (cameraInstance.turnSideGetter > 0)
         {
             _player.transform.Rotate(0, 90, 0);
-            _cameraReference = cameraInstance.cameraPosition;
+            cameraInstance.turnSideGetter = 0;
         }
 
         _movimentVector.x = Input.GetAxis("Horizontal") * movimentSpeed;
@@ -85,10 +78,6 @@ public class PlayerMoviment : MonoBehaviour
         //TEST
         Vector3 motion = _movimentVector * Time.deltaTime;
         _player.Move(transform.TransformVector(motion));
-
-
-        //CORRECT LINE
-        //_player.Move(transform.TransformVector(_movimentVector));
 
     }
 }
