@@ -4,22 +4,16 @@ using UnityEngine;
 
 public class MouseInteraction : MonoBehaviour
 {
-    private RaycastHit _hit;
-    private Ray        _ray;
-    private Vector3    _objectMoviment;
-    private GameObject _currentClicable;
-    private float      _movimentMultiplier = 2f;
+    private RaycastHit          _hit;
+    private Ray                 _ray;
+    private Vector3             _objectMoviment;
+    private InteractibleMouse   _desiredObject;
 
-    private void Start()
-    {
-        _currentClicable = null;
-    }
 
     void Update()
     {
         CheckForMouseInteractible();
-        UpdateObjectMoviment();
-        MoveObject();
+        UpdateInteractibleMoviment();
     }
 
     private void CheckForMouseInteractible()
@@ -30,41 +24,29 @@ public class MouseInteraction : MonoBehaviour
         {
             if (Physics.Raycast(_ray, out _hit, 100.0f))
             {
-                if (_hit.transform != null)
+                if (_hit.transform != null && _hit.collider.gameObject.GetComponent<InteractibleMouse>() != null) 
                 {
-                    _currentClicable = _hit.transform.gameObject;
-                    PrintObjectName();
+                   InteractibleMouse newInteractible = _hit.collider.gameObject.GetComponent<InteractibleMouse>();
+                   SetInteractible(newInteractible);
                 }
             }
         }
         else
         {
-            _currentClicable = null;
+            _desiredObject = null;
         }
-
     }
 
-    private void UpdateObjectMoviment()
+    private void SetInteractible(InteractibleMouse newInteractible)
     {
-        if(_currentClicable != null)
+        _desiredObject = newInteractible;
+    }
+
+    private void UpdateInteractibleMoviment()
+    {
+        if(_desiredObject !=  null)
         {
-            _objectMoviment.x = Input.GetAxis("Mouse X") * _movimentMultiplier;
-            _objectMoviment.y = Input.GetAxis("Mouse Y") * _movimentMultiplier;
-            _objectMoviment.z = 0;
-        }
-
-    }
-
-    private void PrintObjectName()
-    {
-        print(_currentClicable);
-    }
-
-    private void MoveObject() 
-    {
-        if(_currentClicable != null)
-        {
-            _currentClicable.transform.Translate(_objectMoviment);
+            _desiredObject.UpdatePosition();
         }
     }
 
