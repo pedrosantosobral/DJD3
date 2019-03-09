@@ -5,8 +5,10 @@ using UnityEngine;
 public class PlayerMoviment : MonoBehaviour
 {
     public float movimentSpeed;
-    private CharacterController player;
 
+    //TEMPORARY VARIABLE
+    private float _mouseSpeed = 2.5f;
+    private CharacterController player;
     private Vector3 _guideVector;
     private Vector3 _movimentVector;
     private GameObject _guide;
@@ -33,7 +35,7 @@ public class PlayerMoviment : MonoBehaviour
 
     private void UpdateMovimentVector()
     {
-        _movimentVector.x =  Input.GetAxis("Horizontal") * movimentSpeed;
+        _movimentVector.x = Input.GetAxis("Horizontal") * movimentSpeed;
         _movimentVector.y = 0;
         _movimentVector.z = Input.GetAxis("Vertical") * movimentSpeed;
     }
@@ -41,7 +43,10 @@ public class PlayerMoviment : MonoBehaviour
     private void UpdatePlayerMovimentItself()
     {
         player.Move(transform.TransformVector(_movimentVector));
+        //TEMPORARY PLAYER ROTATION
+        if (Input.GetMouseButton(1))
+        {
+            player.transform.Rotate(0, Input.GetAxis("Mouse X") * _mouseSpeed, 0);
+        }
     }
-
-
 }

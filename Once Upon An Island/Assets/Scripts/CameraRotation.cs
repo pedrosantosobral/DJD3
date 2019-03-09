@@ -16,6 +16,12 @@ public class CameraRotation : MonoBehaviour
         if(Input.GetMouseButton(1))
         {
             transform.Rotate(0, Input.GetAxis("Mouse X") * _mouseSpeed, 0);
+            Cursor.lockState = CursorLockMode.Locked;
+
+        }
+        else 
+        {
+            Cursor.lockState = CursorLockMode.None;
         }
 
     }
