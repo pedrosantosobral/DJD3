@@ -24,10 +24,10 @@ public class MouseInteraction : MonoBehaviour
         {
             if (Physics.Raycast(_ray, out _hit, 100.0f))
             {
-                if (_hit.transform != null && _hit.collider.gameObject.GetComponent<InteractibleMouse>() != null) 
+                if (_hit.transform != null && _hit.collider.gameObject.GetComponent<InteractibleMouse>() != null)
                 {
-                   InteractibleMouse newInteractible = _hit.collider.gameObject.GetComponent<InteractibleMouse>();
-                   SetInteractible(newInteractible);
+                    InteractibleMouse newInteractible = _hit.collider.gameObject.GetComponent<InteractibleMouse>();
+                    SetInteractible(newInteractible);
                 }
             }
         }

@@ -4,33 +4,32 @@ using UnityEngine;
 
 public class PlayerMoviment : MonoBehaviour
 {
-    public CameraRotation           cameraInstance;
+    private CameraRotation           _cameraInstance;
 
+    public float                    movimentSpeed       = 25f;
 
-    //if moviment vector multiplication is removed reduce speed to 0.27
-    public float                    movimentSpeed       = 27f;
+    public int                      cameraSideReference = 1;
+    public bool                     controls_without_rotation       = false;
+    public bool                     right_controls                  = true;
 
-    //Probably have to had min and max variables to all the inputs and add a clamp
-    private const float             _jumpAccelaration   = 500.0f;
+    private const float             _jumpAccelaration   = 400.0f;
     private const float             _gravityAcelaration = 20.0f;
-    private const float             _maxJumpVelocity    = 500.0f;
+    private const float             _maxJumpVelocity    = 600.0f;
     private const float             _maxFallVelocity    = 30.0f;
 
-    private int                   _cameraReference;
-
     private CharacterController     _player;
-    private Vector3                 _guideVector;
     private Vector3                 _movimentVector;
-    //test
-    private Vector3 _jumpVelocity;
+    private Vector3                 _jumpVelocity;
 
     void Start()
     {
+        GetCameraInstance();
+
         _player             = GetComponent<CharacterController>();
-        //test
+
         _jumpVelocity       = Vector3.zero;
-        //LINE TO COPY
-        _cameraReference = 1;
+
+        GetCameraSideReference();
     }
 
     void Update()
@@ -41,22 +40,49 @@ public class PlayerMoviment : MonoBehaviour
 
     private void UpdateMoviment()
     {
-
-        if (cameraInstance.turnSideGetter < 0)
-        {
-            _player.transform.Rotate(0, -90, 0);
-            cameraInstance.turnSideGetter = 0;
-        }
-        else if (cameraInstance.turnSideGetter > 0)
+        //TODO need fix -> initial rotation on start, until fix start game with player.transform.rotation(0, -90,0) 
+        if (cameraSideReference != _cameraInstance.cameraPosition
+                && (_cameraInstance.cameraPosition == cameraSideReference + 1
+                || _cameraInstance.cameraPosition == cameraSideReference - 3))
         {
             _player.transform.Rotate(0, 90, 0);
-            cameraInstance.turnSideGetter = 0;
+            GetCameraSideReference();
+
+        }
+        else if (cameraSideReference != _cameraInstance.cameraPosition
+        && (_cameraInstance.cameraPosition == cameraSideReference - 1
+        || _cameraInstance.cameraPosition == cameraSideReference + 3))
+        {
+            _player.transform.Rotate(0, -90, 0);
+            GetCameraSideReference();
         }
 
         _movimentVector.x = Input.GetAxis("Horizontal") * movimentSpeed;
         _movimentVector.z = Input.GetAxis("Vertical") * movimentSpeed;
 
-        //jump need fix
+        //To use in objects moviment
+        /*
+        switch (_cameraInstance.cameraPosition)
+        {
+            case 1:
+                _movimentVector.x = Input.GetAxis("Horizontal") * movimentSpeed;
+                _movimentVector.z = Input.GetAxis("Vertical") * movimentSpeed;
+                break;
+            case 2:
+                _movimentVector.x = Input.GetAxis("Vertical") * movimentSpeed;
+                _movimentVector.z = -Input.GetAxis("Horizontal") * movimentSpeed;
+                break;
+            case 3:
+                _movimentVector.x = -Input.GetAxis("Horizontal") * movimentSpeed;
+                _movimentVector.z = -Input.GetAxis("Vertical") * movimentSpeed;
+                break;
+            case 4:
+                _movimentVector.x = -Input.GetAxis("Vertical") * movimentSpeed;
+                _movimentVector.z = Input.GetAxis("Horizontal") * movimentSpeed;
+                break;
+        }
+        */
+
         if (_player.isGrounded)
         {
             _jumpVelocity.y = Input.GetButtonDown("Jump") ? _jumpAccelaration : 0f;
@@ -67,17 +93,30 @@ public class PlayerMoviment : MonoBehaviour
             _jumpVelocity.y = -_gravityAcelaration;
         }
 
-
-        // TODO FIX JUMP
+        // TODO FIX JUMP (TEM A VER COM O PERFORMACE DO PC)
         _movimentVector.y += _jumpVelocity.y * Time.deltaTime;
-        _movimentVector.y = _jumpVelocity.y == 0f ? -0.1f : Mathf.Clamp(_jumpVelocity.y, -_maxFallVelocity, _maxJumpVelocity);
+        _movimentVector.y =  _jumpVelocity.y == 0f ? -0.1f : Mathf.Clamp(_movimentVector.y, -_maxFallVelocity, _maxJumpVelocity);
     }
 
     private void UpdatePlayerMovimentItself()
     {
-        //TEST
         Vector3 motion = _movimentVector * Time.deltaTime;
         _player.Move(transform.TransformVector(motion));
+    }
 
+    private void GetCameraInstance()
+    {
+        GameObject instance = GameObject.FindWithTag("Camera");
+
+        if (instance != null)
+        {
+            _cameraInstance = instance.GetComponent<CameraRotation>();
+        }
+    }
+
+    private void GetCameraSideReference()
+    {
+        cameraSideReference = _cameraInstance.cameraPosition;
     }
 }
+

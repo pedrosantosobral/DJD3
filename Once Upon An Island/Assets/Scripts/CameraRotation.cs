@@ -5,18 +5,16 @@ using UnityEngine;
 public class CameraRotation : MonoBehaviour
 {
     private const float _mouseSpeed = 2.5f;
-    private float       _cameraRotation;
-    private float       _turningSideChecker;
+    public Vector3     cameraRotationVector;
 
-    private Vector3     _cameraRotationVector;
-
+    public float        cameraExactPosition;
+    public int          cameraPosition;
     public int          turnSideGetter;
 
     private void Start()
     {
-        _cameraRotation = 0;
-        _turningSideChecker = 0;
         turnSideGetter = 0;
+        cameraPosition = 1;
     }
 
     void Update()
@@ -26,37 +24,41 @@ public class CameraRotation : MonoBehaviour
 
     private void RotateCamera()
     {
-        _cameraRotationVector = transform.localEulerAngles;
+        cameraRotationVector = transform.localEulerAngles;
 
         if (Input.GetMouseButton(1))
         {
             Cursor.lockState = CursorLockMode.Locked;
-            _cameraRotationVector.y += Input.GetAxis("Mouse X") * _mouseSpeed;
-            GetCameraRotation();
+            cameraRotationVector.y += Input.GetAxis("Mouse X") * _mouseSpeed;         
+            GetCameraRotation_ByAngles();
+
         }
         else 
         {
             Cursor.lockState = CursorLockMode.None;
         }
 
-        transform.localEulerAngles = _cameraRotationVector;
+        transform.localEulerAngles = cameraRotationVector;
     }
 
-    private void GetCameraRotation()
+    private void GetCameraRotation_ByAngles()
     {
-        _turningSideChecker     += Input.GetAxis("Mouse X");
-        _cameraRotation          = Input.GetAxis("Mouse X");
-
-        if (_cameraRotation > 0 && _turningSideChecker > 18)
+        if ((cameraRotationVector.y < 44.0 && cameraRotationVector.y > 1) ||
+         (cameraRotationVector.y < 359.0) && (cameraRotationVector.y > 316.0))
         {
-            _turningSideChecker = -18;
-            turnSideGetter = 1;
-
+            cameraPosition = 1;
         }
-        else if (_cameraRotation < 0 && _turningSideChecker < -18)
+        if (cameraRotationVector.y > 46.0 && cameraRotationVector.y < 134.0)
         {
-            _turningSideChecker = 18;
-            turnSideGetter = -1;
+            cameraPosition = 2;
         }
-    }
+        if (cameraRotationVector.y > 136.0 && cameraRotationVector.y < 224.0)
+        {
+            cameraPosition = 3;
+        }
+        if (cameraRotationVector.y > 226.0 && cameraRotationVector.y < 314.0)
+        {
+            cameraPosition = 4;
+        }
+    } 
 }

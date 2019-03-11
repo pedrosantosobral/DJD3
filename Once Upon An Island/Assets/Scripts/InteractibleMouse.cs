@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class InteractibleMouse : MonoBehaviour
 {
+    private CameraRotation _cameraInstance;
+    private GameObject _player;
+
+    private int            _counter;
+
     [SerializeField]
     private float _movimentMultiplier = 2f;
     private Vector3 _objectMoviment;
@@ -20,6 +25,13 @@ public class InteractibleMouse : MonoBehaviour
     public float min_y;
     public float min_z;
 
+ 
+    private void Start()
+    {
+        GetCameraInstance();
+        GetPlayer();
+    }
+
     public void UpdatePosition()
     {
         UpdateObjectMoviment();
@@ -28,43 +40,43 @@ public class InteractibleMouse : MonoBehaviour
 
     private void UpdateObjectMoviment()
     {
-        _objectMoviment.x = Input.GetAxis("Mouse X") * _movimentMultiplier;
-        _objectMoviment.y = Input.GetAxis("Mouse Y") * _movimentMultiplier;
-        _objectMoviment.z = 0;
-             
 
-
-        if(_objectMoviment.x <= _objectMoviment.x + max_x)
+        //TODO full remake needed: go PlayerMoviment.cs for references
+        switch (_cameraInstance.cameraPosition)
         {
-            _objectMoviment.x = Input.GetAxis("Mouse X") * _movimentMultiplier;
-        }
-        else if(_objectMoviment.x > _objectMoviment.x + max_x)
-        {
-            _objectMoviment.x = _objectMoviment.x + max_x;
-        }
-
-        if (_objectMoviment.y > _objectMoviment.y + max_y)
-        {
-            _objectMoviment.y = _objectMoviment.y + max_y;
-        }
-        if (_objectMoviment.z > _objectMoviment.z + max_z)
-        {
-            _objectMoviment.z = _objectMoviment.z + max_z;
+            case 1:
+                _objectMoviment.x = Input.GetAxis("Mouse X") * _movimentMultiplier;
+                _objectMoviment.y = Input.GetAxis("Mouse Y") * _movimentMultiplier;
+                break;
+            case 2:
+                _objectMoviment.z = Input.GetAxis("Mouse X") * _movimentMultiplier;
+                _objectMoviment.z = Input.GetAxis("Mouse Y") * _movimentMultiplier;
+                break;
+            case 3:
+                _objectMoviment.x = -Input.GetAxis("Mouse X") * _movimentMultiplier;
+                _objectMoviment.y = -Input.GetAxis("Mouse Y") * _movimentMultiplier;
+                break;
+            case 4:
+                _objectMoviment.x = -Input.GetAxis("Mouse Y") * _movimentMultiplier;
+                _objectMoviment.y = Input.GetAxis("Mouse X") * _movimentMultiplier;
+                break;
         }
 
-        if (_objectMoviment.x < _objectMoviment.x - min_x)
+        //NOT WORKING diferent input handling
+        /*if(_cameraInstance.turnSideGetter > 0)
         {
-            _objectMoviment.x = _objectMoviment.x - min_x;
-        }
-        if (_objectMoviment.y < _objectMoviment.y - min_y)
-        {
-            _objectMoviment.y = _objectMoviment.y - min_y;
-        }
-        if (_objectMoviment.z < _objectMoviment.z - min_z)
-        {
-            _objectMoviment.z = _objectMoviment.z - min_z;
+            _counter += 1;
         }
 
+        if (_cameraInstance.turnSideGetter < 0)
+        {
+            _objectMoviment.y = Input.GetAxis("Mouse X") * _movimentMultiplier;
+        }
+        else if (_cameraInstance.turnSideGetter > 0)
+        {
+            _objectMoviment.y = -Input.GetAxis("Mouse X") * _movimentMultiplier;
+        }
+        */
     }
 
     private void UpdatePositionItself()
@@ -75,4 +87,36 @@ public class InteractibleMouse : MonoBehaviour
         }
     }
 
+    //TODO NEEDS FIX(idk why this crap dont work, brakeys done the sameeee
+    //Move player with the moving object
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject == _player)
+        {
+            _player.transform.parent = transform;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject == _player)
+        {
+            _player.transform.parent = null;
+        }
+    }
+
+    private void GetCameraInstance()
+    {
+        GameObject cameraInstance = GameObject.FindWithTag("Camera");
+
+        if (cameraInstance != null)
+        {
+            _cameraInstance = cameraInstance.GetComponent<CameraRotation>();
+        }
+    }
+
+    private void GetPlayer()
+    {
+        _player = GameObject.FindWithTag("Player");
+    }
 }
